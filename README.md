@@ -34,6 +34,7 @@ This notetaking app is deployed on Heroku, it uses get, post, and delete from th
 ## Contributions
   none
 ## Link
+[notetaking-app](https://notetaking-app-62c80b725441.herokuapp.com/)
 
 ## Questions
   See my Github at [brandonERivera](https://github.com/brandonERivera)
