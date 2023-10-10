@@ -1,9 +1,58 @@
 const notes = require('express').Router();
 const { v4: uuidv4 } = require('uuid');
-const { readAndAppend, readFromFile, writeToFile } = require('../helpers/fsUtils');
+const {readFromFile, readAndAppend, writeToFile } = require('../helpers/fsUtils');
 
 notes.get('/', (req, res) => {
   readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data)))
 });
 
+// GET Route for a specific tip
+notes.get('/:notes_id', (req, res) => {
+  const notesId = req.params.notes_id
+  readFromFile('./db/db.json')
+    .then((data) => JSON.parse(data))
+    .then((json) => {
+      const result = json.filter((notes) => notes.notes_id === notesId);
+      return result.length > 0
+        ? res.json(result)
+        : res.json('No tip with that ID');
+    });
+});
+
+
+notes.delete('/:notes_id', (req, res) => {
+  const notesId = req.params.notes_id
+  readFromFile('./db/db.json')
+    .then((data) => JSON.parse(data))
+    .then((json) => {
+
+      const result = json.filter((notes) => notes.notes_id !== notesId);
+
+
+      writeToFile('./db/db.json', result);
+
+
+      res.json(`Item ${notesId} has been deleted 🗑️`);
+    });
+});
+
+
+notes.post('/', (req, res) => {
+  console.log(req.body);
+
+  const { title, text } = req.body;
+
+  if (req.body) {
+    const newnote = {
+      title,
+      text,
+      notes_id: uuidv4(),
+    };
+
+    readAndAppend(newnote, './db/db.json');
+    res.json(`notes added successfully`);
+  } else {
+    res.errored('Error in adding notes');
+  }
+});
 module.exports = notes
